@@ -1,0 +1,249 @@
+Завдання 1
+public class Box {
+    private double length;
+    private double width;
+    private double height;
+
+    public Box(double length, double width, double height) {
+        setLength(length);
+        setWidth(width);
+        setHeight(height);
+    }
+
+    // Приватні сеттери з перевіркою
+    private void setLength(double length) {
+        if (length <= 0) {
+            throw new IllegalArgumentException("Length must be positive");
+        }
+        this.length = length;
+    }
+
+    private void setWidth(double width) {
+        if (width <= 0) {
+            throw new IllegalArgumentException("Width must be positive");
+        }
+        this.width = width;
+    }
+
+    private void setHeight(double height) {
+        if (height <= 0) {
+            throw new IllegalArgumentException("Height must be positive");
+        }
+        this.height = height;
+    }
+
+    // Повна площа поверхні: 2(lw + lh + wh)
+    public double getSurfaceArea() {
+        return 2 * (length * width + length * height + width * height);
+    }
+
+    // Площа бічної поверхні: 2h(l + w)
+    public double getLateralSurfaceArea() {
+        return 2 * height * (length + width);
+    }
+
+    // Об’єм: l * w * h
+    public double getVolume() {
+        return length * width * height;
+    }
+}
+Завдання 2
+Клас Item
+
+public class Item {
+    private String name;
+    private double price;
+
+    public Item(String name, double price) {
+        this.name = name;
+        setPrice(price);
+    }
+
+    private void setPrice(double price) {
+        if (price < 0) {
+            throw new IllegalArgumentException("Price must be non-negative");
+        }
+        this.price = price;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public double getPrice() {
+        return this.price;
+    }
+}
+Клас Cart
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Cart {
+    // Одна позиція в кошику: товар + кількість
+    private static class CartItem {
+        private Item item;
+        private int quantity;
+
+        public CartItem(Item item, int quantity) {
+            if (quantity <= 0) {
+                throw new IllegalArgumentException("Quantity must be positive");
+            }
+            this.item = item;
+            this.quantity = quantity;
+        }
+
+        public double getTotalPrice() {
+            return item.getPrice() * quantity;
+        }
+
+        public Item getItem() {
+            return item;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+    }
+
+    private List<CartItem> items = new ArrayList<>();
+
+    public void addItem(Item item, int quantity) {
+        this.items.add(new CartItem(item, quantity));
+    }
+
+    public double getTotal() {
+        double sum = 0;
+        for (CartItem ci : items) {
+            sum += ci.getTotalPrice();
+        }
+        return sum;
+    }
+
+    public boolean isEmpty() {
+        return this.items.isEmpty();
+    }
+
+    public List<Item> getItems() {
+        List<Item> result = new ArrayList<>();
+        for (CartItem ci : items) {
+            result.add(ci.getItem());
+        }
+        return result;
+    }
+}
+Клас Order
+
+public class Order {
+    private Cart cart;
+    private String customerName;
+    private double totalPrice;
+
+    public Order(String customerName, Cart cart) {
+        this.customerName = customerName;
+        this.cart = cart;
+        this.totalPrice = cart.getTotal();
+    }
+
+    public String getCustomerName() {
+        return this.customerName;
+    }
+
+    public double getTotalPrice() {
+        return this.totalPrice;
+    }
+
+    public Cart getCart() {
+        return this.cart;
+    }
+}
+Завдання 3
+
+public class IntStack {
+    private int[] data;
+    private int size; // кількість елементів у стеку
+
+    private static final int INITIAL_CAPACITY = 10;
+
+    public IntStack() {
+        this.data = new int[INITIAL_CAPACITY];
+        this.size = 0;
+    }
+
+    // Додає елемент на вершину стека
+    public void push(int value) {
+        ensureCapacity();
+        this.data[size] = value;
+        this.size++;
+    }
+
+    // Повертає та видаляє верхній елемент
+    public int pop() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Stack is empty");
+            // або: return 0; якщо не хочеш працювати з винятками
+        }
+        int value = this.data[size - 1];
+        this.size--;
+        return value;
+    }
+
+    // Повертає верхній елемент без видалення
+    public int peek() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Stack is empty");
+            // або: return 0;
+        }
+        return this.data[size - 1];
+    }
+
+    // Кількість елементів
+    public int size() {
+        return this.size;
+    }
+
+    // Чи порожній стек
+    public boolean isEmpty() {
+        return this.size == 0;
+    }
+
+    // Очистити стек
+    public void clear() {
+        this.size = 0;
+    }
+
+    // Приватний метод для збільшення масиву
+    private void ensureCapacity() {
+        if (this.size == this.data.length) {
+            int newCapacity = this.data.length * 2;
+            int[] newData = new int[newCapacity];
+            System.arraycopy(this.data, 0, newData, 0, this.data.length);
+            this.data = newData;
+        }
+    }
+}
+
+Приклад використання
+public class StackMain {
+    public static void main(String[] args) {
+        IntStack stack = new IntStack();
+
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+
+        System.out.println("Розмір: " + stack.size());     // 3
+        System.out.println("Верхній елемент: " + stack.peek()); // 30
+
+        System.out.println("pop: " + stack.pop());         // 30
+        System.out.println("pop: " + stack.pop());         // 20
+
+        System.out.println("Розмір після pop: " + stack.size()); // 1
+        System.out.println("Порожній? " + stack.isEmpty());      // false
+
+        stack.clear();
+        System.out.println("Порожній після clear? " + stack.isEmpty()); // true
+    }
+}
+
+
